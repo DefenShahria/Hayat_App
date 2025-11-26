@@ -14,7 +14,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   String? selectedPhone;
 
   List<String> phoneNumbers = ["01700000000", "01800000000"];
-  final TextEditingController newPhoneController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +23,10 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
         title: const Text("Blood Request"),
         centerTitle: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-
             /// --------------------- CREATE REQUEST BUTTON ---------------------
             GestureDetector(
               onTap: () => _showCreateRequestPopup(),
@@ -99,6 +97,9 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
   // -------------------------- POPUP FUNCTION --------------------------
   void _showCreateRequestPopup() {
+    // Pre-fill phoneController if a number is already selected
+    if (selectedPhone != null) phoneController.text = selectedPhone!;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -116,7 +117,6 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               Center(
                 child: Container(
                   height: 5,
@@ -136,47 +136,67 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
               const SizedBox(height: 20),
 
               _buildDropdown(
-                  label: "Select Blood Group",
-                  value: selectedBloodGroup,
-                  items: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
-                  onChanged: (v) => setState(() => selectedBloodGroup = v)
+                label: "Select Blood Group",
+                value: selectedBloodGroup,
+                items: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+                onChanged: (v) => setState(() => selectedBloodGroup = v),
               ),
 
               const SizedBox(height: 15),
 
               _buildDropdown(
-                  label: "Select Location",
-                  value: selectedLocation,
-                  items: ["Dhaka", "Chittagong", "Sylhet", "Rajshahi", "Khulna"],
-                  onChanged: (v) => setState(() => selectedLocation = v)
+                label: "Select Location",
+                value: selectedLocation,
+                items: ["Dhaka", "Chittagong", "Sylhet", "Rajshahi", "Khulna"],
+                onChanged: (v) => setState(() => selectedLocation = v),
               ),
 
               const SizedBox(height: 15),
 
               _buildDropdown(
-                  label: "Select Hospital",
-                  value: selectedHospital,
-                  items: [
-                    "Square Hospital", "United Hospital", "Dhaka Medical",
-                    "Evercare Hospital", "Sarwar Hospital"
-                  ],
-                  onChanged: (v) => setState(() => selectedHospital = v)
+                label: "Select Hospital",
+                value: selectedHospital,
+                items: [
+                  "Square Hospital",
+                  "United Hospital",
+                  "Dhaka Medical",
+                  "Evercare Hospital",
+                  "Sarwar Hospital"
+                ],
+                onChanged: (v) => setState(() => selectedHospital = v),
               ),
 
               const SizedBox(height: 15),
 
-              _buildDropdown(
-                  label: "Select Phone Number",
-                  value: selectedPhone,
-                  items: phoneNumbers,
-                  onChanged: (v) => setState(() => selectedPhone = v)
-              ),
+              // ------------------ Phone Section ------------------
+              const Text("Phone Number"),
+              const SizedBox(height: 5),
 
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _addNewPhonePopup,
-                  child: const Text("Add New Number"),
+              DropdownButtonFormField<String>(
+                value: selectedPhone,
+                items: phoneNumbers
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
+                onChanged: (v) {
+                  setState(() {
+                    selectedPhone = v;
+                    phoneController.text = v ?? "";
+                  });
+                },
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: "Edit Phone Number",
+                  border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
 
@@ -185,13 +205,18 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Use phoneController.text for the final phone number
+                    String finalPhone = phoneController.text;
+                    // Perform submit logic here
+                  },
                   child: const Padding(
                     padding: EdgeInsets.all(12.0),
-                    child: Text("Submit Request", style: TextStyle(fontSize: 18)),
+                    child: Text("Submit Request",
+                        style: TextStyle(fontSize: 18)),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -222,43 +247,6 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  // ------------------- ADD NEW NUMBER POPUP -------------------
-  void _addNewPhonePopup() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Add New Number"),
-          content: TextField(
-            controller: newPhoneController,
-            keyboardType: TextInputType.phone,
-            decoration:
-            const InputDecoration(hintText: "Enter phone number"),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (newPhoneController.text.isNotEmpty) {
-                  setState(() {
-                    phoneNumbers.add(newPhoneController.text);
-                    selectedPhone = newPhoneController.text;
-                  });
-                }
-                newPhoneController.clear();
-                Navigator.pop(context);
-              },
-              child: const Text("Add"),
-            ),
-          ],
-        );
-      },
     );
   }
 }
