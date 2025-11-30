@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
   // Dummy data
   final List<Map<String, String>> donationHistory = const [
     {"date": "2025-11-01", "bloodGroup": "B+", "location": "Dhaka", "hospital": "Square Hospital"},
@@ -27,15 +32,6 @@ class HistoryScreen extends StatelessWidget {
     {"date": "2024-04-05", "bloodGroup": "B+", "location": "Dhaka", "hospital": "Sarwar Hospital"},
   ];
 
-
-  final List<String> recommendedFoods = const [
-    "Spinach & Leafy Greens",
-    "Red Meat",
-    "Legumes & Beans",
-    "Vitamin C rich fruits",
-    "Iron-rich cereals"
-  ];
-
   @override
   Widget build(BuildContext context) {
     // Calculate next donation date (3 months from last donation)
@@ -54,36 +50,93 @@ class HistoryScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            // ---------------- Next Donation ----------------
+            // ---------------- Accepted Request (Top Section) ----------------
             Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               elevation: 3,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.calendar_today, color: Colors.red, size: 28),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Next Eligible Donation",
+                    const Text(
+                      "Accepted Donation Request",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    const SizedBox(height: 12),
+
+                    Row(
+                      children: [
+                        Container(
+                          height: 45,
+                          width: 45,
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade100,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "B+",
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16)),
-                          const SizedBox(height: 5),
-                          Text(nextDonation,
-                              style: const TextStyle(fontSize: 14)),
-                        ],
-                      ),
-                    )
+                                  color: Colors.red,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                "Hospital: Square Hospital",
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "Location: Dhaka",
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "Donation Time: 3 Feb 2025, 4:00 PM",
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "Contact: 017XXXXXXXX",
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Row(
+                      children: [
+                        const Icon(Icons.info, color: Colors.blue, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "Please reach the hospital on time with a photo ID.",
+                            style:
+                            TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
+
 
             // ---------------- Donation History ----------------
             const Text("Donation History",
@@ -113,37 +166,6 @@ class HistoryScreen extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // ---------------- Recommended Foods ----------------
-            const Text("Recommended Foods",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 80,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: recommendedFoods.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  return Container(
-                    width: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.red.shade200),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: Center(
-                      child: Text(
-                        recommendedFoods[index],
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
           ],
         ),
       ),
