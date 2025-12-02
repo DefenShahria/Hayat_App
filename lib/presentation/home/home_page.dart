@@ -57,7 +57,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Blood Requests')),
+      appBar: AppBar(
+        title: const Text('Blood Requests'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.black, Colors.red.shade800],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.separated(
@@ -82,11 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 curve: Curves.easeInOut,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.black.withOpacity(0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 5),
                     ),
@@ -102,14 +113,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 50,
                           width: 50,
                           decoration: BoxDecoration(
-                            color: Colors.red.shade100,
+                            color: Theme.of(context).colorScheme.error.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Center(
                             child: Text(
                               request['bloodGroup']!,
-                              style: const TextStyle(
-                                  color: Colors.red,
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16),
                             ),
@@ -159,9 +170,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        OutlinedButton(
+                          onPressed: () {
+                            // Decline logic
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Theme.of(context).colorScheme.error,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 25, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            side: BorderSide(color: Theme.of(context).colorScheme.error),
+                          ),
+                          child: const Text("Decline", style: TextStyle(fontSize: 16)),
+                        ),
+                        const SizedBox(width: 10),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: Colors.green, // Explicitly green for clarity
+                            foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 25, vertical: 12),
                             shape: RoundedRectangleBorder(
@@ -172,21 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             // Accept logic
                           },
                           child: const Text("Accept", style: TextStyle(fontSize: 16)),
-                        ),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey.shade700,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 25, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () {
-                            // Decline logic
-                          },
-                          child: const Text("Decline", style: TextStyle(fontSize: 16)),
                         ),
                       ],
                     ),
@@ -203,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: Colors.red),
+        Icon(icon, color: Theme.of(context).colorScheme.error, size: 22),
         const SizedBox(width: 8),
         Text(
           "$label: ",

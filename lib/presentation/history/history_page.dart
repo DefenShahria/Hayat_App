@@ -43,7 +43,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
         : "N/A";
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Donation History')),
+      appBar: AppBar(
+        title: const Text('Donation History'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.black, Colors.red.shade800],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -128,6 +139,43 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             style:
                             TextStyle(fontSize: 13, color: Colors.grey.shade700),
                           ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton(
+                          onPressed: () {
+                            // Cancel logic
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            side: const BorderSide(color: Colors.red),
+                          ),
+                          child: const Text("Cancel"),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                            // Get directions logic
+                          },
+                          child: const Text("Get Directions"),
                         ),
                       ],
                     ),

@@ -22,6 +22,15 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
       appBar: AppBar(
         title: const Text("Blood Request"),
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.black, Colors.red.shade800],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
