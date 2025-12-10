@@ -3,7 +3,7 @@ class Urls {
 
 
   static const String authenticate_users = '$baseUrl/users/login';
-  static const String register_users = '$baseUrl/auth/register';
+  static const String register_users = '$baseUrl/users/register';
 
 
 }

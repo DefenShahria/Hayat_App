@@ -14,18 +14,29 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
-  final SigninController _signinController = Get.put(SigninController());
+  // Controller is now found, not put
+  final SigninController _signinController = Get.find<SigninController>();
 
   Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
-      final bool success = await _signinController.verifySignin(_phoneController.text);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_signinController.message)),
+      final bool success = await _signinController.verifySignin(_phoneController.text.trim());
+      if (success) {
+        Get.snackbar(
+          'Success',
+          _signinController.message,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
         );
-        if (success) {
-          Get.offAll(() => const BottomNavBar());
-        }
+        Get.offAll(() => const BottomNavBar());
+      } else {
+        Get.snackbar(
+          'Sign In Failed',
+          _signinController.message,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     }
   }
