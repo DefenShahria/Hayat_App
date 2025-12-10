@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-
-import '../Bottom_Navigationbar/bottom_navigationBar.dart';
+import '../authentation/SignIn_page.dart';
+import '../core/utils/controller_binding.dart';
 import 'app_theme.dart';
 
 class MyApp extends StatelessWidget {
@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
       darkTheme: AppThemes.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const BottomNavBar(),
+      home: const SignInPage(),
+      initialBinding: ControllerBinder(),
     );
   }
 }
