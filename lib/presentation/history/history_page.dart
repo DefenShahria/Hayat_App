@@ -8,214 +8,342 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  // Dummy data
   final List<Map<String, String>> donationHistory = const [
-    {"date": "2025-11-01", "bloodGroup": "B+", "location": "Dhaka", "hospital": "Square Hospital"},
-    {"date": "2025-10-01", "bloodGroup": "B+", "location": "Dhaka", "hospital": "United Hospital"},
-    {"date": "2025-09-01", "bloodGroup": "B+", "location": "Chittagong", "hospital": "Evercare Hospital"},
-    {"date": "2025-08-15", "bloodGroup": "B+", "location": "Sylhet", "hospital": "Dhaka Medical"},
-    {"date": "2025-07-10", "bloodGroup": "B+", "location": "Dhaka", "hospital": "Sarwar Hospital"},
-    {"date": "2025-06-05", "bloodGroup": "B+", "location": "Khulna", "hospital": "Square Hospital"},
-    {"date": "2025-05-20", "bloodGroup": "B+", "location": "Dhaka", "hospital": "United Hospital"},
-    {"date": "2025-04-15", "bloodGroup": "B+", "location": "Chittagong", "hospital": "Evercare Hospital"},
-    {"date": "2025-03-10", "bloodGroup": "B+", "location": "Sylhet", "hospital": "Dhaka Medical"},
-    {"date": "2025-02-05", "bloodGroup": "B+", "location": "Dhaka", "hospital": "Sarwar Hospital"},
-    {"date": "2025-01-01", "bloodGroup": "B+", "location": "Khulna", "hospital": "Square Hospital"},
-    {"date": "2024-12-15", "bloodGroup": "B+", "location": "Dhaka", "hospital": "United Hospital"},
-    {"date": "2024-11-10", "bloodGroup": "B+", "location": "Chittagong", "hospital": "Evercare Hospital"},
-    {"date": "2024-10-05", "bloodGroup": "B+", "location": "Sylhet", "hospital": "Dhaka Medical"},
-    {"date": "2024-09-01", "bloodGroup": "B+", "location": "Dhaka", "hospital": "Sarwar Hospital"},
-    {"date": "2024-08-25", "bloodGroup": "B+", "location": "Khulna", "hospital": "Square Hospital"},
-    {"date": "2024-07-20", "bloodGroup": "B+", "location": "Dhaka", "hospital": "United Hospital"},
-    {"date": "2024-06-15", "bloodGroup": "B+", "location": "Chittagong", "hospital": "Evercare Hospital"},
-    {"date": "2024-05-10", "bloodGroup": "B+", "location": "Sylhet", "hospital": "Dhaka Medical"},
-    {"date": "2024-04-05", "bloodGroup": "B+", "location": "Dhaka", "hospital": "Sarwar Hospital"},
+    {
+      "date": "2025-11-01",
+      "bloodGroup": "B+",
+      "location": "Dhaka",
+      "hospital": "Square Hospital",
+    },
+    {
+      "date": "2025-10-01",
+      "bloodGroup": "B+",
+      "location": "Dhaka",
+      "hospital": "United Hospital",
+    },
+    {
+      "date": "2025-09-01",
+      "bloodGroup": "B+",
+      "location": "Chittagong",
+      "hospital": "Evercare Hospital",
+    },
+    {
+      "date": "2025-08-15",
+      "bloodGroup": "B+",
+      "location": "Sylhet",
+      "hospital": "Dhaka Medical",
+    },
+    {
+      "date": "2025-07-10",
+      "bloodGroup": "B+",
+      "location": "Dhaka",
+      "hospital": "Sarwar Hospital",
+    },
+    {
+      "date": "2025-06-05",
+      "bloodGroup": "B+",
+      "location": "Khulna",
+      "hospital": "Square Hospital",
+    },
+    {
+      "date": "2025-05-20",
+      "bloodGroup": "B+",
+      "location": "Dhaka",
+      "hospital": "United Hospital",
+    },
+    {
+      "date": "2025-04-15",
+      "bloodGroup": "B+",
+      "location": "Chittagong",
+      "hospital": "Evercare Hospital",
+    },
+    {
+      "date": "2025-03-10",
+      "bloodGroup": "B+",
+      "location": "Sylhet",
+      "hospital": "Dhaka Medical",
+    },
+    {
+      "date": "2025-02-05",
+      "bloodGroup": "B+",
+      "location": "Dhaka",
+      "hospital": "Sarwar Hospital",
+    },
+    {
+      "date": "2025-01-01",
+      "bloodGroup": "B+",
+      "location": "Khulna",
+      "hospital": "Square Hospital",
+    },
+    {
+      "date": "2024-12-15",
+      "bloodGroup": "B+",
+      "location": "Dhaka",
+      "hospital": "United Hospital",
+    },
+    {
+      "date": "2024-11-10",
+      "bloodGroup": "B+",
+      "location": "Chittagong",
+      "hospital": "Evercare Hospital",
+    },
+    {
+      "date": "2024-10-05",
+      "bloodGroup": "B+",
+      "location": "Sylhet",
+      "hospital": "Dhaka Medical",
+    },
+    {
+      "date": "2024-09-01",
+      "bloodGroup": "B+",
+      "location": "Dhaka",
+      "hospital": "Sarwar Hospital",
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
-    // Calculate next donation date (3 months from last donation)
-    final String nextDonation = donationHistory.isNotEmpty
-        ? DateTime.parse(donationHistory.first['date']!)
-        .add(const Duration(days: 90))
-        .toString()
-        .split(' ')[0]
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final nextDonation = donationHistory.isNotEmpty
+        ? DateTime.parse(
+            donationHistory.first['date']!,
+          ).add(const Duration(days: 90)).toString().split(' ')[0]
         : "N/A";
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Donation History'),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.black, Colors.red.shade800],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 140,
+            floating: false,
+            pinned: true,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF06B6D4).withOpacity(0.8),
+                      Color(0xFF0891B2).withOpacity(0.6),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Donation History',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Your generosity saves lives',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            // ---------------- Accepted Request (Top Section) ----------------
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Accepted Donation Request",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Color(0xFF1A1A2E).withOpacity(0.7)
+                        : Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 1.5,
                     ),
-                    const SizedBox(height: 12),
-
-                    Row(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF06B6D4).withOpacity(0.15),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Next Donation Available',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade500,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color(0xFF06B6D4).withOpacity(0.8),
+                                  Color(0xFF0891B2).withOpacity(0.8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xFF06B6D4).withOpacity(0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.calendar_today,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  nextDonation,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'You\'ve donated ${donationHistory.length} times',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade500,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Donation Timeline',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ]),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final item = donationHistory[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Color(0xFF1A1A2E).withOpacity(0.5)
+                          : Colors.white.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.2),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFF06B6D4).withOpacity(0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
                       children: [
                         Container(
                           height: 45,
                           width: 45,
                           decoration: BoxDecoration(
-                            color: Colors.red.shade100,
-                            borderRadius: BorderRadius.circular(10),
+                            color: Color(0xFF06B6D4).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Center(
-                            child: Text(
-                              "B+",
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                          child: const Icon(
+                            Icons.bloodtype_rounded,
+                            color: Color(0xFF06B6D4),
+                            size: 22,
                           ),
                         ),
-                        const SizedBox(width: 12),
-
+                        const SizedBox(width: 14),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                "Hospital: Square Hospital",
+                                '${item['bloodGroup']} at ${item['hospital']}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                '${item['location']} • ${item['date']}',
                                 style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Location: Dhaka",
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Donation Time: 3 Feb 2025, 4:00 PM",
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Contact: 017XXXXXXXX",
-                                style: TextStyle(fontSize: 14),
+                                  fontSize: 12,
+                                  color: Colors.grey.shade500,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Row(
-                      children: [
-                        const Icon(Icons.info, color: Colors.blue, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            "Please reach the hospital on time with a photo ID.",
-                            style:
-                            TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                          ),
+                        Icon(
+                          Icons.check_circle,
+                          color: Color(0xFF10B981),
+                          size: 20,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        OutlinedButton(
-                          onPressed: () {
-                            // Cancel logic
-                          },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.red,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            side: const BorderSide(color: Colors.red),
-                          ),
-                          child: const Text("Cancel"),
-                        ),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () {
-                            // Get directions logic
-                          },
-                          child: const Text("Get Directions"),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              }, childCount: donationHistory.length),
             ),
-            const SizedBox(height: 20),
-
-
-            // ---------------- Donation History ----------------
-            const Text("Donation History",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.separated(
-                itemCount: donationHistory.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final item = donationHistory[index];
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 2,
-                    child: ListTile(
-                      leading: const Icon(Icons.bloodtype, color: Colors.red),
-                      title: Text("${item['bloodGroup']} donated"),
-                      subtitle: Text(
-                          "${item['hospital']}, ${item['location']}\nDate: ${item['date']}"),
-                      isThreeLine: true,
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-          ],
-        ),
+          ),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
+        ],
       ),
     );
   }

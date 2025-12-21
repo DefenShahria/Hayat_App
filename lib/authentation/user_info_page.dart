@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'SignIn_page.dart';
-import 'auth_controller/signup_controller.dart';
+import '../Bottom_Navigationbar/bottom_navigationBar.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+class UserInfoPage extends StatefulWidget {
+  const UserInfoPage({super.key});
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  State<UserInfoPage> createState() => _UserInfoPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
+class _UserInfoPageState extends State<UserInfoPage>
+    with TickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   String? _selectedBloodGroup;
   String? _selectedDistrict;
   String? _selectedCity;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  int _currentStep = 0;
 
   late AnimationController _fadeController;
 
@@ -29,9 +34,8 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
     'Khulna': ['Khulna', 'Jessore', 'Satkhira', 'Bagerhat'],
     'Barishal': ['Barishal', 'Jhalokati', 'Patuakhali', 'Bhola'],
   };
-  List<String> _cities = [];
 
-  final SignupController _signupController = Get.find<SignupController>();
+  List<String> _cities = [];
 
   @override
   void initState() {
@@ -46,41 +50,57 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _fadeController.dispose();
     super.dispose();
   }
 
-  Future<void> _signUp() async {
-    if (_formKey.currentState!.validate()) {
-      final bool success = await _signupController.registerUser(
-        _nameController.text.trim(),
-        _emailController.text.trim(),
-        _phoneController.text.trim(),
-        _selectedBloodGroup!,
-        _selectedDistrict!,
-        _selectedCity!,
-      );
-      if (success) {
-        Get.snackbar(
-          'Success',
-          _signupController.message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.shade400,
-          colorText: Colors.white,
-        );
-        Get.offAll(() => const SignInPage());
-      } else {
-        Get.snackbar(
-          'Sign Up Failed',
-          _signupController.message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade400,
-          colorText: Colors.white,
-        );
-      }
+  void _nextStep() {
+    if (_currentStep < 2) {
+      setState(() {
+        _currentStep++;
+      });
+    } else {
+      _submitForm();
     }
+  }
+
+  void _previousStep() {
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep--;
+      });
+    }
+  }
+
+  void _submitForm() {
+    Get.offAll(BottomNavBar());
+
+    // if (_formKey.currentState!.validate()) {
+    //   // Validate password match
+    //   if (_passwordController.text != _confirmPasswordController.text) {
+    //     Get.snackbar(
+    //       'Error',
+    //       'Passwords do not match',
+    //       snackPosition: SnackPosition.BOTTOM,
+    //       backgroundColor: Colors.red.shade400,
+    //       colorText: Colors.white,
+    //     );
+    //     return;
+    //   }
+
+    //   Get.snackbar(
+    //     'Success',
+    //     'Profile created successfully!',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //     backgroundColor: Colors.green.shade400,
+    //     colorText: Colors.white,
+    //   );
+
+    //   // Navigate to home
+    //   Get.offAll(() => const BottomNavBar());
+    // }
   }
 
   @override
@@ -90,19 +110,13 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.arrow_back, color: Colors.black87),
-            ),
-          ),
+        title: Text(
+          'Complete Your Profile',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
+        centerTitle: true,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -126,170 +140,100 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
-
-                      Text(
-                        'Create Your\nAccount',
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              height: 1.3,
-                            ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        'Join our blood donation community',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey.shade600,
+                      // Progress indicator
+                      LinearProgressIndicator(
+                        value: (_currentStep + 1) / 3,
+                        minHeight: 6,
+                        backgroundColor: Colors.grey.shade200,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.red.shade400,
                         ),
+                        borderRadius: BorderRadius.circular(3),
                       ),
 
                       const SizedBox(height: 32),
 
-                      // Name field
-                      _buildFormField(
-                        controller: _nameController,
-                        label: 'Full Name',
-                        hint: 'Ahmed Hassan',
-                        icon: Icons.person_outline,
-                        validator: (value) =>
-                            value?.isEmpty ?? true ? 'Enter your name' : null,
-                      ),
+                      // Step titles
+                      if (_currentStep == 0) ...[
+                        _buildStepHeader(
+                          'Step 1 of 3',
+                          'Basic Information',
+                          'Tell us your name and create a password',
+                        ),
+                        const SizedBox(height: 32),
+                        _buildNameField(),
+                        const SizedBox(height: 20),
+                        _buildPasswordField(),
+                        const SizedBox(height: 20),
+                        _buildConfirmPasswordField(),
+                      ] else if (_currentStep == 1) ...[
+                        _buildStepHeader(
+                          'Step 2 of 3',
+                          'Blood Information',
+                          'Select your blood group for easy identification',
+                        ),
+                        const SizedBox(height: 32),
+                        _buildBloodGroupSelector(),
+                      ] else if (_currentStep == 2) ...[
+                        _buildStepHeader(
+                          'Step 3 of 3',
+                          'Location',
+                          'Help us find donors near you',
+                        ),
+                        const SizedBox(height: 32),
+                        _buildDistrictSelector(),
+                        const SizedBox(height: 20),
+                        _buildCitySelector(),
+                      ],
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 48),
 
-                      // Email field
-                      _buildFormField(
-                        controller: _emailController,
-                        label: 'Email',
-                        hint: 'ahmed@example.com',
-                        icon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return 'Enter your email';
-                          }
-                          if (!RegExp(
-                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                          ).hasMatch(value!)) {
-                            return 'Enter a valid email';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Phone field
-                      _buildFormField(
-                        controller: _phoneController,
-                        label: 'Phone',
-                        hint: '01712345678',
-                        icon: Icons.phone_outlined,
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return 'Enter your phone number';
-                          }
-                          if (!RegExp(
-                            r'^(?:01\d{9}|[0-9]{10,11})$',
-                          ).hasMatch(value!)) {
-                            return 'Enter a valid phone number';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Blood Group
-                      _buildBloodGroupField(),
-
-                      const SizedBox(height: 24),
-
-                      // District
-                      _buildDistrictField(),
-
-                      const SizedBox(height: 16),
-
-                      // City
-                      _buildCityField(),
-
-                      const SizedBox(height: 32),
-
-                      // Sign up button
-                      GetBuilder<SignupController>(
-                        builder: (controller) {
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 56,
+                      // Navigation buttons
+                      Row(
+                        children: [
+                          if (_currentStep > 0)
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: _previousStep,
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Back',
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                          if (_currentStep > 0) const SizedBox(width: 16),
+                          Expanded(
                             child: ElevatedButton(
-                              onPressed: controller.signupInProgress
-                                  ? null
-                                  : _signUp,
+                              onPressed: _nextStep,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                disabledBackgroundColor: Colors.red.withOpacity(
-                                  0.5,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                elevation: 0,
                               ),
-                              child: controller.signupInProgress
-                                  ? const SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
-                                            ),
-                                      ),
-                                    )
-                                  : Text(
-                                      'Create Account',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                            ),
-                          );
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Sign in link
-                      Center(
-                        child: RichText(
-                          text: TextSpan(
-                            text: 'Already have an account? ',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: Colors.grey.shade600),
-                            children: [
-                              TextSpan(
-                                text: 'Sign In',
-                                style: Theme.of(context).textTheme.bodyMedium
+                              child: Text(
+                                _currentStep == 2 ? 'Complete' : 'Next',
+                                style: Theme.of(context).textTheme.titleLarge
                                     ?.copyWith(
-                                      color: Colors.red,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.w600,
                                     ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-
-                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -301,19 +245,42 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildFormField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    String? Function(String?)? validator,
-  }) {
+  Widget _buildStepHeader(String step, String title, String subtitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          step,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Colors.red.shade400,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: Theme.of(
+            context,
+          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade600),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Full Name',
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
@@ -331,23 +298,145 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
             ],
           ),
           child: TextFormField(
-            controller: controller,
-            keyboardType: keyboardType,
+            controller: _nameController,
             style: Theme.of(context).textTheme.bodyLarge,
             decoration: InputDecoration(
-              hintText: hint,
-              prefixIcon: Icon(icon),
+              hintText: 'e.g., Ahmed Hassan',
+              prefixIcon: const Icon(Icons.person_outline),
               filled: true,
               fillColor: Colors.white.withOpacity(0.9),
             ),
-            validator: validator,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your name';
+              }
+              if (value.length < 3) {
+                return 'Name must be at least 3 characters';
+              }
+              return null;
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBloodGroupField() {
+  Widget _buildPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Password',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: _passwordController,
+            obscureText: _obscurePassword,
+            style: Theme.of(context).textTheme.bodyLarge,
+            decoration: InputDecoration(
+              hintText: 'Minimum 8 characters',
+              prefixIcon: const Icon(Icons.lock_outline),
+              suffixIcon: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+                child: Icon(
+                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.9),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a password';
+              }
+              if (value.length < 8) {
+                return 'Password must be at least 8 characters';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConfirmPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Confirm Password',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: _confirmPasswordController,
+            obscureText: _obscureConfirmPassword,
+            style: Theme.of(context).textTheme.bodyLarge,
+            decoration: InputDecoration(
+              hintText: 'Re-enter your password',
+              prefixIcon: const Icon(Icons.lock_outline),
+              suffixIcon: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _obscureConfirmPassword = !_obscureConfirmPassword;
+                  });
+                },
+                child: Icon(
+                  _obscureConfirmPassword
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.9),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please confirm your password';
+              }
+              return null;
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBloodGroupSelector() {
     final bloodGroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
     return Column(
@@ -359,7 +448,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -436,7 +525,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildDistrictField() {
+  Widget _buildDistrictSelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -500,7 +589,7 @@ class _SignUpPageState extends State<SignUpPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildCityField() {
+  Widget _buildCitySelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

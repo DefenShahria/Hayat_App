@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 
-import '../Bottom_Navigationbar/bottom_navigationBar.dart';
+import '../authentation/google_auth_page.dart';
 import '../core/utils/controller_binding.dart';
 import 'app_theme.dart';
 
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
       initialBinding: ControllerBinder(),
-      home: const BottomNavBar(),
+      home: const GoogleAuthPage(),
     );
   }
 }
