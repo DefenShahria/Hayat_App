@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hayat/authentation/google_auth_page.dart';
 import '../../authentation/SignIn_page.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -330,32 +331,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Logout?'),
-                                content: const Text(
-                                  'Are you sure you want to logout?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Get.offAll(() => const SignInPage());
-                                    },
-                                    child: const Text(
-                                      'Logout',
-                                      style: TextStyle(
-                                        color: Color(0xFFEF4444),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
+                            Get.offAll(() => const GoogleAuthPage());
+
+                            // showDialog(
+                            //   context: context,
+                            //   builder: (context) => AlertDialog(
+                            //     title: const Text('Logout?'),
+                            //     content: const Text(
+                            //       'Are you sure you want to logout?',
+                            //     ),
+                            //     actions: [
+                            //       TextButton(
+                            //         onPressed: () => Navigator.pop(context),
+                            //         child: const Text('Cancel'),
+                            //       ),
+                            //       TextButton(
+                            //         onPressed: () {
+                            //           Get.offAll(() => const SignInPage());
+                            //         },
+                            //         child: const Text(
+                            //           'Logout',
+                            //           style: TextStyle(
+                            //             color: Color(0xFFEF4444),
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // );
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
