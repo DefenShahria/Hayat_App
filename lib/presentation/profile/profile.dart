@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hayat/authentation/google_auth_page.dart';
-import '../../authentation/SignIn_page.dart';
+import '../../authentation/auth_controller/google_auth_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,6 +15,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = FirebaseAuth.instance.currentUser;
+    final displayName = user?.displayName ?? 'User';
+    final email = user?.email ?? 'No email';
+    final photoUrl = user?.photoURL;
 
     return Scaffold(
       body: CustomScrollView(
@@ -92,16 +97,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   child: Column(
                     children: [
+                      // Show Google profile photo or fallback icon
                       Container(
                         height: 80,
                         width: 80,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0xFFA855F7).withOpacity(0.8),
-                              Color(0xFFD946EF).withOpacity(0.8),
-                            ],
-                          ),
+                          gradient: photoUrl == null
+                              ? LinearGradient(
+                                  colors: [
+                                    Color(0xFFA855F7).withOpacity(0.8),
+                                    Color(0xFFD946EF).withOpacity(0.8),
+                                  ],
+                                )
+                              : null,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
@@ -111,23 +119,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 40,
-                        ),
+                        child: photoUrl != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                  photoUrl,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Color(0xFFA855F7).withOpacity(0.8),
+                                          Color(0xFFD946EF).withOpacity(0.8),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                      size: 40,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 40,
+                              ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Ali Ahmed',
-                        style: TextStyle(
+                      Text(
+                        displayName,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'B+ • Dhaka',
+                        email,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade500,
@@ -137,22 +169,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 16),
                       Container(height: 1, color: Colors.grey.withOpacity(0.2)),
                       const SizedBox(height: 16),
-                      _buildProfileItem(
-                        Icons.email_rounded,
-                        'Email',
-                        'ali@example.com',
-                      ),
+                      _buildProfileItem(Icons.email_rounded, 'Email', email),
                       const SizedBox(height: 12),
                       _buildProfileItem(
                         Icons.phone_rounded,
                         'Phone',
-                        '017XXXXXXXX',
+                        user?.phoneNumber ?? 'Not set',
                       ),
                       const SizedBox(height: 12),
                       _buildProfileItem(
                         Icons.badge_rounded,
                         'Donations',
-                        '15 times',
+                        '0 times',
                       ),
                     ],
                   ),
@@ -302,64 +330,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 12),
                 // Logout Button
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFEF4444).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Color(0xFFEF4444).withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 45,
-                        width: 45,
-                        decoration: BoxDecoration(
-                          color: Color(0xFFEF4444).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.logout_rounded,
-                          color: Color(0xFFEF4444),
-                          size: 22,
-                        ),
+                GestureDetector(
+                  onTap: () => _showLogoutDialog(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFEF4444).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Color(0xFFEF4444).withOpacity(0.3),
+                        width: 1,
                       ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.offAll(() => const GoogleAuthPage());
-
-                            // showDialog(
-                            //   context: context,
-                            //   builder: (context) => AlertDialog(
-                            //     title: const Text('Logout?'),
-                            //     content: const Text(
-                            //       'Are you sure you want to logout?',
-                            //     ),
-                            //     actions: [
-                            //       TextButton(
-                            //         onPressed: () => Navigator.pop(context),
-                            //         child: const Text('Cancel'),
-                            //       ),
-                            //       TextButton(
-                            //         onPressed: () {
-                            //           Get.offAll(() => const SignInPage());
-                            //         },
-                            //         child: const Text(
-                            //           'Logout',
-                            //           style: TextStyle(
-                            //             color: Color(0xFFEF4444),
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // );
-                          },
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 45,
+                          width: 45,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFEF4444).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.logout_rounded,
+                            color: Color(0xFFEF4444),
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -382,17 +381,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                         ),
-                      ),
-                      const Icon(
-                        Icons.arrow_forward_ios,
-                        color: Color(0xFFEF4444),
-                        size: 18,
-                      ),
-                    ],
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xFFEF4444),
+                          size: 18,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
               ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Logout?'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final controller = Get.find<GoogleAuthController>();
+              await controller.signOut();
+              Get.offAll(() => const GoogleAuthPage());
+            },
+            child: const Text(
+              'Logout',
+              style: TextStyle(color: Color(0xFFEF4444)),
             ),
           ),
         ],

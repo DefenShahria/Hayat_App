@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'SignIn_page.dart';
 import 'auth_controller/google_auth_controller.dart';
 
 class GoogleAuthPage extends StatefulWidget {
@@ -15,6 +14,7 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
   late final GoogleAuthController _authController;
   late AnimationController _fadeController;
   late AnimationController _slideController;
+  late AnimationController _pulseController;
 
   @override
   void initState() {
@@ -28,6 +28,11 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
+    _pulseController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat(reverse: true);
+
     _fadeController.forward();
     _slideController.forward();
   }
@@ -36,6 +41,7 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
   void dispose() {
     _fadeController.dispose();
     _slideController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -73,12 +79,12 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
                     children: [
                       const SizedBox(height: 40),
 
-                      // Water drop animation
+                      // Animated Logo
                       ScaleTransition(
-                        scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+                        scale: Tween<double>(begin: 0.95, end: 1.05).animate(
                           CurvedAnimation(
-                            parent: _fadeController,
-                            curve: Curves.easeOut,
+                            parent: _pulseController,
+                            curve: Curves.easeInOut,
                           ),
                         ),
                         child: Container(
@@ -114,7 +120,6 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
 
                       const SizedBox(height: 40),
 
-                      // Title with gradient
                       ShaderMask(
                         shaderCallback: (bounds) => LinearGradient(
                           colors: [Colors.red.shade600, Colors.red.shade400],
@@ -128,6 +133,7 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
                                 color: Colors.white,
                                 fontSize: 48,
                                 letterSpacing: 2,
+                                fontWeight: FontWeight.bold,
                               ),
                         ),
                       ),
@@ -146,7 +152,6 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
 
                       const SizedBox(height: 60),
 
-                      // Description cards with glass effect
                       _buildFeatureCard(
                         icon: Icons.favorite,
                         title: 'Save Lives',
@@ -160,144 +165,95 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
                         description: 'Locate donors and hospitals near you',
                         color: Colors.blue,
                       ),
-                      const SizedBox(height: 16),
-                      _buildFeatureCard(
-                        icon: Icons.history,
-                        title: 'Track Donations',
-                        description: 'Maintain your donation history',
-                        color: Colors.orange,
-                      ),
 
-                      const SizedBox(height: 60),
+                      const SizedBox(height: 80),
 
-                      // Google Sign-In Button
+                      // Refined Google Sign-In Button
                       GetBuilder<GoogleAuthController>(
                         builder: (controller) {
-                          return GestureDetector(
-                            onTap: controller.isLoading
-                                ? null
-                                : () =>
-                                      _authController.signInWithGoogle(context),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: controller.isLoading
-                                  ? const SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.red,
-                                            ),
+                          return Column(
+                            children: [
+                              GestureDetector(
+                                onTap: controller.isLoading
+                                    ? null
+                                    : () =>
+                                          _authController.signInWithGoogle(context),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 18),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 20,
+                                        offset: const Offset(0, 10),
                                       ),
-                                    )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Image.asset(
-                                          'assets/google_logo.png',
-                                          height: 24,
-                                          width: 24,
-                                          errorBuilder: (_, __, ___) =>
-                                              const Icon(Icons.language),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Text(
-                                          'Continue with Google',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge
-                                              ?.copyWith(
-                                                color: Colors.black87,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ],
+                                    ],
+                                    border: Border.all(
+                                      color: controller.isLoading 
+                                          ? Colors.red.shade200 
+                                          : Colors.transparent,
+                                      width: 2,
                                     ),
-                            ),
+                                  ),
+                                  child: controller.isLoading
+                                      ? Center(
+                                          child: SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              valueColor: AlwaysStoppedAnimation<Color>(
+                                                Colors.red.shade600,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Image.asset(
+                                              'assets/google_logo.png',
+                                              height: 24,
+                                              width: 24,
+                                              errorBuilder: (_, __, ___) =>
+                                                  const Icon(Icons.language, color: Colors.blue),
+                                            ),
+                                            const SizedBox(width: 14),
+                                            Text(
+                                              'Continue with Google',
+                                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                              ),
+                              if (controller.isLoading)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Text(
+                                    'Securely signing you in...',
+                                    style: TextStyle(
+                                      color: Colors.red.shade600,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           );
                         },
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 60),
 
-                      // Divider with text
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Colors.grey.shade300,
-                              thickness: 1,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              'or',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Colors.grey.shade300,
-                              thickness: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Phone Sign-In Button
-                      GestureDetector(
-                        onTap: () => Get.to(() => const SignInPage()),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.red, width: 2),
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.red.withOpacity(0.05),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.phone,
-                                color: Colors.red.shade600,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                'Continue with Phone',
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      color: Colors.red.shade600,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      // Privacy text
                       Text(
                         'By continuing, you agree to our\nTerms of Service and Privacy Policy',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -329,24 +285,17 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
         color: Colors.white.withOpacity(0.6),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withOpacity(0.4), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         children: [
           Container(
-            height: 50,
-            width: 50,
+            height: 45,
+            width: 45,
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Center(child: Icon(icon, color: color, size: 28)),
+            child: Center(child: Icon(icon, color: color, size: 24)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -355,17 +304,14 @@ class _GoogleAuthPageState extends State<GoogleAuthPage>
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
                   description,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
                 ),
               ],
             ),

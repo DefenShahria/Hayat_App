@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../Bottom_Navigationbar/bottom_navigationBar.dart';
@@ -45,6 +46,12 @@ class _UserInfoPageState extends State<UserInfoPage>
       vsync: this,
     );
     _fadeController.forward();
+
+    // Pre-fill name from Google account if available
+    final user = FirebaseAuth.instance.currentUser;
+    if (user?.displayName != null && user!.displayName!.isNotEmpty) {
+      _nameController.text = user.displayName!;
+    }
   }
 
   @override
