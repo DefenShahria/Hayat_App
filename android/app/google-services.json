@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1012525097709",
+    "project_id": "hayat-db0e2",
+    "storage_bucket": "hayat-db0e2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012525097709:android:0a735d96a03c297135e2e4",
+        "android_client_info": {
+          "package_name": "com.example.hayat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012525097709-4cvmivq7avptcp1d8vd3t3a4mgdmiava.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hayat",
+            "certificate_hash": "87f0246f61ff2c985d02b1d2f7dea956f8eeb212"
+          }
+        },
+        {
+          "client_id": "1012525097709-a7t2s5u5o4tlkmp55m5s0lr7q9qkc3ao.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUCGHS9wdG0K0XNKgkueqQ-uMB_ouS-T4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012525097709-a7t2s5u5o4tlkmp55m5s0lr7q9qkc3ao.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
